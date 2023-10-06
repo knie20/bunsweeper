@@ -1,12 +1,11 @@
 import { TileState, defaultTileState } from "@/models/BoardState";
 import TileFace from "./TileFace";
-import { TileMark, TileValue } from "@/models/TileDisplay";
 
 export default function Tile() {
     
     return <>
-        <button className="">
+        <div className="tile-container w-8 h-8">
             <TileFace tileState={defaultTileState}></TileFace>
-        </button>
+        </div>
     </>
 }

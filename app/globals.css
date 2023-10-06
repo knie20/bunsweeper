@@ -16,3 +16,9 @@
   }
 }
 
+button.tile {
+  border-color: slategrey;
+  border: 2px;
+  font-weight: bold;
+}
+
