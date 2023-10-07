@@ -24,8 +24,43 @@ export interface TileState {
     mark: TileMark,
 }
 
-export const defaultTileState: TileState = {
-    revealed: true,
-    value: TileValue.One,
-    mark: TileMark.Blank
+export const getAllTileStates: (() => TileState[][]) = () => {
+    let revealedMarkCombinations : [boolean, TileMark][] = [
+        [true, TileMark.Blank],
+        [true, TileMark.Marked],
+        [true, TileMark.Question],
+        [false, TileMark.Blank],
+        [false, TileMark.Marked],
+        [false, TileMark.Question],
+    ];
+
+    let allTileValues = [
+        TileValue.None,
+        TileValue.One,
+        TileValue.Two,
+        TileValue.Three,
+        TileValue.Four,
+        TileValue.Five,
+        TileValue.Six,
+        TileValue.Seven,
+        TileValue.Eight,
+        TileValue.Bomb
+    ]
+
+    let result: TileState[][] = [];
+    revealedMarkCombinations.forEach(([revealed, mark]: [boolean, TileMark]) => {
+        result.push(
+            allTileValues
+            .map(value => {
+                return {
+                    value,
+                    revealed,
+                    mark 
+                };
+        }));
+    });
+
+    return result;
 }
+
+export const testBoardState: BoardState = new BoardState(getAllTileStates());
