@@ -16,9 +16,12 @@
   }
 }
 
-button.tile {
-  border-color: slategrey;
-  border: 2px;
+.tile-container {
+  border: 2px solid slategrey;
   font-weight: bold;
+}
+
+button.tile {
+  
 }
 

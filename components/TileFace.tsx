@@ -2,7 +2,16 @@ import { TileState } from "@/models/BoardState";
 import { TileMark, TileValue } from "@/models/TileDisplay";
 
 export default function TileFace({tileState}: {tileState: TileState}) {
-    let button;
+    const button = makeButton(tileState);
+    
+    return <>
+        {button}
+    </>
+}
+
+const makeButton = (tileState: TileState) => {
+
+    
     if(!tileState.revealed){
         switch (tileState.mark){
             case TileMark.Blank: {
@@ -14,10 +23,6 @@ export default function TileFace({tileState}: {tileState: TileState}) {
             case TileMark.Question: {
                 return <button className="tile question">?</button>
             }
-        }
-
-        if(tileState.value == TileValue.Bomb){
-            return <button className="tile revealed-bomb"></button>
         }
     } else {
         switch(tileState.value){
@@ -53,8 +58,4 @@ export default function TileFace({tileState}: {tileState: TileState}) {
             }
         }
     }
-    
-    return <>
-        {button}
-    </>
 }
