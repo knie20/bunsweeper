@@ -27,34 +27,34 @@ const makeButton = (tileState: TileState) => {
     } else {
         switch(tileState.value){
             case TileValue.None: {
-                return <button className="tile revealed"></button>
+                return <button className="tile-revealed"></button>
             }
             case TileValue.One: {
-                return <button className="tile revealed text-blue-700">1</button>
+                return <button className="tile-revealed text-blue-700">1</button>
             }
             case TileValue.Two: {
-                return <button className="tile revealed text-green-700"></button>
+                return <button className="tile-revealed text-green-700">2</button>
             }
             case TileValue.Three: {
-                return <button className="tile revealed text-red-700"></button>
+                return <button className="tile-revealed text-red-700">3</button>
             }
             case TileValue.Four: {
-                return <button className="tile revealed text-purple-700"></button>
+                return <button className="tile-revealed text-purple-700">4</button>
             }
             case TileValue.Five: {
-                return <button className="tile revealed text-orange-500"></button>
+                return <button className="tile-revealed text-orange-500">5</button>
             }
             case TileValue.Six: {
-                return <button className="tile revealed text-gray-700"></button>
+                return <button className="tile-revealed text-gray-700">6</button>
             }
             case TileValue.Seven: {
-                return <button className="tile revealed text-amber-900"></button>
+                return <button className="tile-revealed text-amber-900">7</button>
             }
             case TileValue.Eight: {
-                return <button className="tile revealed text-cyan-700"></button>
+                return <button className="tile-revealed text-cyan-700">8</button>
             }
             case TileValue.Bomb: {
-                return <button className="tile revealed-bomb">*</button>
+                return <button className="bg-red-600">⊗</button>
             }
         }
     }
