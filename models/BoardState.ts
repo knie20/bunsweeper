@@ -24,6 +24,12 @@ export interface TileState {
     mark: TileMark,
 }
 
+export const initialTileState: TileState = {
+    revealed: false,
+    value: TileValue.None,
+    mark: TileMark.Blank
+}
+
 export const getAllTileStates: (() => TileState[][]) = () => {
     let revealedMarkCombinations : [boolean, TileMark][] = [
         [true, TileMark.Blank],

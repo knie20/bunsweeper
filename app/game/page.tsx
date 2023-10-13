@@ -12,6 +12,6 @@ export default function Page() {
     const bombAmount = prams.get('bombs');
 
     return <div className="flex flex-col items-center">
-        <Game />
+        <Game length={boardLength} width={boardWidth} bombAmount={bombAmount}/>
     </div>
 }
