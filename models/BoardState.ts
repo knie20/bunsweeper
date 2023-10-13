@@ -1,5 +1,7 @@
 import { TileMark, TileValue } from "./TileDisplay";
 
+export type Coords = [x: number, y: number]; 
+
 export class BoardState {
     tiles: TileState[][] = [];
 
@@ -25,7 +27,7 @@ export interface TileState {
 }
 
 export const initialTileState: TileState = {
-    revealed: false,
+    revealed: true,
     value: TileValue.None,
     mark: TileMark.Blank
 }

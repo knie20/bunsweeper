@@ -1,17 +1,22 @@
 "use client"
 import { useSearchParams } from "next/navigation"
-import AppHeader from "../../components/AppHeader";
 import Game from "../../components/Game";
-import { ClassNames } from "@emotion/react";
 
 export default function Page() {
     const prams = useSearchParams();
 
-    const boardLength = prams.get('length');
-    const boardWidth = prams.get('width');
-    const bombAmount = prams.get('bombs');
+    const boardLengthString = prams.get('length') ?? '';
+    const boardWidthString = prams.get('width') ?? '';
+    const bombAmountString = prams.get('bombs') ?? '';
 
-    return <div className="flex flex-col items-center">
+    if(!boardLengthString || !boardWidthString || !bombAmountString)
+        throw new Error("invalid params")
+
+    const boardLength: number = +boardLengthString;
+    const boardWidth: number = +boardWidthString;
+    const bombAmount: number = +bombAmountString;
+
+    return <div className="flex flex-col items-start">
         <Game length={boardLength} width={boardWidth} bombAmount={bombAmount}/>
     </div>
 }

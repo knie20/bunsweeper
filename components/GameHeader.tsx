@@ -1,5 +1,3 @@
-import { BoardState, testBoardState } from "@/models/BoardState"
-import Board from "./Board";
 
 export default function GameHeader({bombAmount, marksUsed, bombsRevealed}: 
     {
