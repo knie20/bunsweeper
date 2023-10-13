@@ -14,7 +14,7 @@ export default function Board({boardState}: {
         })
     })
 
-    return <div className="grid grid-flow-row overflow-scroll" style={generateBoardGrid(6, 10)}>
+    return <div className="grid grid-flow-row overflow-scroll" style={generateBoardGrid(boardState.xLength, boardState.yLength)}>
         {tiles}
     </div>
 }
