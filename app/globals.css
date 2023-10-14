@@ -16,20 +16,6 @@
   }
 }
 
-.board-container{
-
-}
-
-.tile-container {
-  border: 2px solid slategrey;
-  font-weight: bold;
-}
-
-.tile-container button {
-  flex-grow: 1;
-  padding: none;
-}
-
 button.tile {
   background-color: rgb(186, 186, 186);
 }

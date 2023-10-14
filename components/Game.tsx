@@ -2,16 +2,19 @@ import { BoardState, Coords, TileState, initialTileState, testBoardState } from 
 import Board from "./Board";
 import GameHeader from "./GameHeader";
 import { TileValue } from "@/models/TileDisplay";
+import { useState } from "react";
 
 export default function Game({length, width, bombAmount}: {
     length: number,
     width: number,
     bombAmount: number
 }) {
-    const boardState: BoardState = generateBoard(length, width, bombAmount);
+    const [marksUsed, setMarksUsed] = useState(0);
+    const [bombsRevealed, setBombsRevealed] = useState(0);
+    const [boardState, setBoardState] = useState(generateBoard(length, width, bombAmount));
     
     return <>
-        <GameHeader bombAmount={10} marksUsed={0} bombsRevealed={0}></GameHeader>
+        <GameHeader bombAmount={bombAmount} marksUsed={marksUsed} bombsRevealed={bombsRevealed}></GameHeader>
         <Board boardState={boardState}></Board>
     </>
 }

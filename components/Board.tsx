@@ -9,7 +9,7 @@ export default function Board({boardState}: {
     boardState.tiles.map((tileRow, y) => {
         tileRow.map((tile, x) => {
             tiles.push(
-                <Tile tileState={tile} key={`(${x},${y})_${buildKey(tile)}`}></Tile>
+                <Tile tileState={tile} onTileClicked={onTileClicked} key={`(${x},${y})_${buildKey(tile)}`}></Tile>
             )
         })
     })
@@ -27,4 +27,8 @@ const generateBoardGrid = (rows: number, columns: number): any => {
     return {
         gridTemplate: `repeat(${rows}, 32px) / repeat(${columns}, 32px)`
     };
+}
+
+function onTileClicked(): void {
+    throw new Error("Function not implemented.");
 }
