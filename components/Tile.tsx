@@ -8,62 +8,71 @@ export default function Tile({tileState, onTileClicked}: {
     const face = makeFace(tileState);
     
     return <div className="flex w-8 h-8 font-extrabold border-solid border-2 border-gray-700 grow">
-        <div className={getButtonClassName(tileState.revealed)}>
+        <div className={getButtonClassName(tileState)}>
             {face}
         </div>
     </div>
 }
 
-const getButtonClassName = (revealed: boolean): string => {
-    const base = 'flex grow items-stretch';
-    return revealed ? `${base} tile` : `${base} tile-revealed`;
+const getButtonClassName = (tileState: TileState): string => {
+    let base = 'flex grow items-stretch justify-center items-center cursor-pointer';
+    if(!tileState.revealed)
+        base += ' tile';
+    else 
+        base += ' tile-revealed';
+
+    let color = '';
+
+    if(tileState.revealed) {
+        switch(tileState.value){
+            case TileValue.One:
+                color = 'text-blue-700';
+                break;
+            case TileValue.Two:
+                color = 'text-green-700';
+                break;
+            case TileValue.Three:
+                color = 'text-red-700';
+                break;
+            case TileValue.Four:
+                color = 'text-purple-700';
+                break;
+            case TileValue.Five:
+                color = 'text-orange-500';
+                break;
+            case TileValue.Six:
+                color = 'text-gray-700';
+                break;
+            case TileValue.Seven:
+                color = 'text-amber-900';
+                break;
+            case TileValue.Eight: 
+                color = 'text-cyan-700';
+                break;
+            case TileValue.Bomb:
+                color = 'bg-red-600';
+                break;
+        }
+    }
+
+    return `${base} ${color}`;
 }
 
 const makeFace = (tileState: TileState) => {
     if(!tileState.revealed){
         switch (tileState.mark){
-            case TileMark.Blank: {
-                return <></>;
-            }
-            case TileMark.Marked: {
-                return <div className="grow">¶</div>;
-            }
-            case TileMark.Question: {
-                return <div className="grow">?</div>;
-            }
+            case TileMark.Blank:
+                return '';
+            case TileMark.Marked:
+                return '¶';
+            case TileMark.Question:
+                return '?';
         }
     } else {
-        switch(tileState.value){
-            case TileValue.None: {
-                return <></>;
-            }
-            case TileValue.One: {
-                return <div className="text-blue-700 grow">1</div>;
-            }
-            case TileValue.Two: {
-                return <div className="text-green-700 grow">2</div>;
-            }
-            case TileValue.Three: {
-                return <div className="text-red-700 grow">3</div>;
-            }
-            case TileValue.Four: {
-                return <div className="text-purple-700 grow">4</div>;
-            }
-            case TileValue.Five: {
-                return <div className="text-orange-500 grow">5</div>;
-            }
-            case TileValue.Six: {
-                return <div className="text-gray-700 grow">6</div>;
-            }
-            case TileValue.Seven: {
-                return <div className="text-amber-900 grow">7</div>;
-            }
-            case TileValue.Eight: {
-                return <div className="text-cyan-700 grow">8</div>;
-            }
-            case TileValue.Bomb: {
-                return <div className="bg-red-600 grow">⊗</div>;
-            }
-        }
+        if(tileState.value === TileValue.None)
+            return '';
+        if(tileState.value === TileValue.Bomb)
+            return '⊗';
+        return tileState.value.toString();
     }
 }
