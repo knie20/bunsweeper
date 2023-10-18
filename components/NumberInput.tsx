@@ -22,7 +22,7 @@ export default function NumberInput({value, label, valueChangeHook}: {value: num
             InputProps={{
                 inputProps: { min: 0 }
             }}
-            value={value}
+            value={inputValue}
             onChange={handleInputChange} 
             className="p-4"
             />

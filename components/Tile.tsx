@@ -8,9 +8,9 @@ export default function Tile({tileState, onTileClicked}: {
     const face = makeFace(tileState);
     
     return <div className="flex w-8 h-8 font-extrabold border-solid border-2 border-gray-700 grow">
-        <button className={getButtonClassName(tileState.revealed)}>
+        <div className={getButtonClassName(tileState.revealed)}>
             {face}
-        </button>
+        </div>
     </div>
 }
 

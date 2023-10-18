@@ -5,12 +5,12 @@ export type Coords = [x: number, y: number];
 export class BoardState {
     tiles: TileState[][] = [];
 
-    get xLength(): number {
+    get yLength(): number {
         if(this.tiles.length > 0) return this.tiles[0].length;
         return 0;
     }
 
-    get yLength(): number {
+    get xLength(): number {
         return this.tiles.length;
     }
 

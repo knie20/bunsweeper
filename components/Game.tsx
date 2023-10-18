@@ -2,7 +2,7 @@ import { BoardState, Coords, TileState, initialTileState, testBoardState } from 
 import Board from "./Board";
 import GameHeader from "./GameHeader";
 import { TileValue } from "@/models/TileDisplay";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Game({length, width, bombAmount}: {
     length: number,
@@ -11,7 +11,13 @@ export default function Game({length, width, bombAmount}: {
 }) {
     const [marksUsed, setMarksUsed] = useState(0);
     const [bombsRevealed, setBombsRevealed] = useState(0);
-    const [boardState, setBoardState] = useState(generateBoard(length, width, bombAmount));
+    const [boardState, setBoardState] = useState(new BoardState([]));
+
+    useEffect(() => {
+        setBoardState(generateBoard(length, width, bombAmount));
+        return () => {}
+    }, [length, width, bombAmount])
+    
     
     return <>
         <GameHeader bombAmount={bombAmount} marksUsed={marksUsed} bombsRevealed={bombsRevealed}></GameHeader>
@@ -38,7 +44,7 @@ const generateBoard = (length: number, width: number, bombAmount: number): Board
 const generateCoordinates = (maxX: number, maxY: number, bombAmount: number): Coords[] => {
     let bombCoords: Coords[] = [];
     
-    while (bombCoords.length <= bombAmount){
+    while (bombCoords.length < bombAmount){
         let newBombCoords: Coords = [Math.floor(Math.random() * maxX), Math.floor(Math.random() * maxY)];
         
         let isCoordsExisting = bombCoords.find(coords => JSON.stringify(newBombCoords) === JSON.stringify(coords));
@@ -83,7 +89,7 @@ const updateSurroundingTiles = (board: BoardState, bombCoords: Coords): void => 
 
     surroundingCoords.forEach(coord => {
         let tile = board.tiles[coord[0]][coord[1]]; 
-        if(tile.value !== TileValue.Bomb)
+        if(tile.value != TileValue.Bomb)
             tile.value += 1;
     });
 }
