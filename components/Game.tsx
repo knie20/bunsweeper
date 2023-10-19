@@ -18,10 +18,13 @@ export default function Game({length, width, bombAmount}: {
         return () => {}
     }, [length, width, bombAmount])
     
+    const handleTileClicked = (tileState: TileState, coords: Coords) => {
+        
+    }
     
     return <>
         <GameHeader bombAmount={bombAmount} marksUsed={marksUsed} bombsRevealed={bombsRevealed}></GameHeader>
-        <Board boardState={boardState}></Board>
+        <Board boardState={boardState} onTileClicked={handleTileClicked}></Board>
     </>
 }
 
@@ -30,7 +33,7 @@ const generateBoard = (length: number, width: number, bombAmount: number): Board
         .map(() => Array(width).fill(null)
             .map(() => {return {...initialTileState}}));
 
-    const bombCoordinates: Coords[] = generateCoordinates(length - 1, width - 1, bombAmount);
+    const bombCoordinates: Coords[] = generateBombCoordinates(length - 1, width - 1, bombAmount);
 
     const boardState = new BoardState(tiles);
 
@@ -41,7 +44,7 @@ const generateBoard = (length: number, width: number, bombAmount: number): Board
     return boardState;
 }
 
-const generateCoordinates = (maxX: number, maxY: number, bombAmount: number): Coords[] => {
+const generateBombCoordinates = (maxX: number, maxY: number, bombAmount: number): Coords[] => {
     let bombCoords: Coords[] = [];
     
     while (bombCoords.length < bombAmount){

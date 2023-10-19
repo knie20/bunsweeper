@@ -27,7 +27,7 @@ export interface TileState {
 }
 
 export const initialTileState: TileState = {
-    revealed: true,
+    revealed: false,
     value: TileValue.None,
     mark: TileMark.Blank
 }

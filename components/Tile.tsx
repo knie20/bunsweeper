@@ -1,14 +1,15 @@
-import { TileState } from "@/models/BoardState";
+import { Coords, TileState } from "@/models/BoardState";
 import { TileMark, TileValue } from "@/models/TileDisplay";
 
-export default function Tile({tileState, onTileClicked}: {
+export default function Tile({tileState, coords, onTileClicked}: {
     tileState: TileState,
-    onTileClicked: () => void
+    coords: Coords,
+    onTileClicked: (tileState: TileState, coords: Coords) => void
 }) {
     const face = makeFace(tileState);
     
     return <div className="flex w-8 h-8 font-extrabold border-solid border-2 border-gray-700 grow">
-        <div className={getButtonClassName(tileState)}>
+        <div className={getButtonClassName(tileState)} onClick={() => onTileClicked(tileState, coords)}>
             {face}
         </div>
     </div>
