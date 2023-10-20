@@ -6,7 +6,7 @@ export class BoardState {
     tiles: TileState[][] = [];
 
     status: gameStatus = "inprogress";
-    marks: number;
+    marks: number = 0;
 
     get yLength(): number {
         if(this.tiles.length > 0) return this.tiles[0].length;
@@ -17,9 +17,10 @@ export class BoardState {
         return this.tiles.length;
     }
 
-    constructor(tiles: TileState[][]){
+    public constructor(tiles: TileState[][], marks?: number, status?: gameStatus){
+        this.marks = marks ?? 0;
+        this.status = status ?? "inprogress";
         this.tiles = tiles;
-        this.marks = 0;
     }
 
 }

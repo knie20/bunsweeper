@@ -74,7 +74,7 @@ export const applyToTileAtCoord = (
     board: BoardState, 
     coord: Coord, 
     action: (tile: TileState) => TileState
-    ): BoardState => {
+    ): TileState[][] => {
     const nextTiles = board.tiles.map((tileRow, y) => {
         if (y === coord[1]){
             return tileRow.map((tile, x) => {
@@ -86,15 +86,14 @@ export const applyToTileAtCoord = (
         }
         return tileRow;
     });
-    
-    return new BoardState(nextTiles);
+    return nextTiles;
 }
 
 export const applyToTilesAtCoords = (
     board: BoardState, 
     coords: Coord[], 
     action: (tile: TileState) => TileState
-    ): BoardState => {
+    ): TileState[][] => {
     const applicableYList = coords.map(c => c[1]).filter(onlyUnique).sort();
 
     const nextTiles = board.tiles.map((tileRow, y) => {
@@ -108,8 +107,7 @@ export const applyToTilesAtCoords = (
         }
         return tileRow;
     });
-    
-    return new BoardState(nextTiles);
+    return nextTiles;
 }
 
 const onlyUnique = (value: number, index: number, array: number[]): boolean => {
@@ -125,7 +123,7 @@ export const markTileWithQuestion: (tile: TileState) => TileState
 export const markTileWithBlank: (tile: TileState) => TileState 
     = (tile) => ({...tile, mark: TileMark.Blank});    
 
-export const propagateReveal = (board: BoardState, coord: Coord): BoardState => {
+export const propagateReveal = (board: BoardState, coord: Coord): TileState[][] => {
     const coordsToReveal = computePropagateCoords(board, coord, [coord]);
 
     const nextBoard = applyToTilesAtCoords(board, coordsToReveal, revealTile);
@@ -164,7 +162,7 @@ const computePropagateCoords = (
     return coordsToReveal;
 }
 
-export const applyRevealAllBombs = (board: BoardState): BoardState => {
+export const applyRevealAllBombs = (board: BoardState): TileState[][] => {
     const nextTiles = board.tiles.map((tileRow, y) => {
         return tileRow.map((tile, x) => {
             if(tile.value === TileValue.Bomb){
@@ -173,6 +171,5 @@ export const applyRevealAllBombs = (board: BoardState): BoardState => {
             return tile;
         });
     });
-    
-    return new BoardState(nextTiles);
+    return nextTiles;
 }

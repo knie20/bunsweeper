@@ -16,7 +16,7 @@ export default function Page() {
     const boardWidth: number = +boardWidthString;
     const bombAmount: number = +bombAmountString;
 
-    return <div className="flex flex-col items-start">
+    return <div className="flex flex-col items-center">
         <Game length={boardLength} width={boardWidth} bombAmount={bombAmount}/>
     </div>
 }

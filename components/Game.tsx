@@ -69,27 +69,20 @@ const boardReducer = (state: BoardState, action: BoardStateAction): BoardState =
         }
         case ('tile-left-clicked'): {
             if (action.tileState.value === TileValue.Bomb){
-                let nextBoard = applyRevealAllBombs(state);
-                nextBoard.status = "lost";
-
-                return nextBoard;
+                return new BoardState(applyRevealAllBombs(state), state.marks, state.status);
             }
             if (action.tileState.value === TileValue.None)
-                return propagateReveal(state, action.coord);
-            return applyToTileAtCoord(state, action.coord, revealTile);
+                return new BoardState(propagateReveal(state, action.coord), state.marks, state.status);
+            return new BoardState(applyToTileAtCoord(state, action.coord, revealTile), state.marks, state.status);
         }
         case ('tile-right-clicked'): {
             switch(state.tiles[action.coord[1]][action.coord[0]].mark){
                 case (TileMark.Blank): {
-                    let nextBoard = applyToTileAtCoord(state, action.coord, markTileWithFlag);
-                    nextBoard.marks += 1;
-                    return nextBoard;
+                    return new BoardState(applyToTileAtCoord(state, action.coord, markTileWithFlag), state.marks + 1, state.status);
                 } case (TileMark.Flagged): {
-                    let nextBoard = applyToTileAtCoord(state, action.coord, markTileWithQuestion);
-                    nextBoard.marks -= 1;
-                    return nextBoard;
+                    return new BoardState(applyToTileAtCoord(state, action.coord, markTileWithQuestion), state.marks -1, state.status);
                 } case (TileMark.Question): {
-                    return applyToTileAtCoord(state, action.coord, clearTileMark);
+                    return new BoardState(applyToTileAtCoord(state, action.coord, clearTileMark), state.marks, state.status);
                 }
             }
         }
