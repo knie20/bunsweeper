@@ -1,10 +1,10 @@
 import { BoardState, Coord, TileState } from "@/models/BoardState"
 import Board from "./Board";
 import GameHeader from "./GameHeader";
-import { TileMark, TileValue } from "@/models/TileDisplay";
 import { useCallback, useEffect, useReducer, useState } from "react";
 import { BoardStateAction } from "@/models/Store";
-import { applyToTileAtCoord, generateBoard, markTile, propagateReveal, revealTile } from "@/helpers/board.helpers";
+import { applyToTileAtCoord, generateBoard, markTile, propagateReveal, revealTile } from "@/lib/board";
+import { TileValue } from "@/models/TileDisplay";
 
 export default function Game({length, width, bombAmount}: {
     length: number,
@@ -16,7 +16,7 @@ export default function Game({length, width, bombAmount}: {
     const [boardState, boardStateDispatch] = useReducer(boardReducer, new BoardState([]));
     
     useEffect(() => {
-        const generateNewBoardAction: BoardStateAction = {
+        let generateNewBoardAction: BoardStateAction = {
             type: "new-board",
             length, width, bombAmount
         };
@@ -27,7 +27,7 @@ export default function Game({length, width, bombAmount}: {
     const handleTileClicked = useCallback((tileState: TileState, coord: Coord) => {
         const rightClickAction: BoardStateAction = {
             type: "tile-left-clicked",
-            tileState, coord: coord
+            tileState, coord
         };
 
         boardStateDispatch(rightClickAction);
@@ -36,7 +36,7 @@ export default function Game({length, width, bombAmount}: {
     const handleTileRightClicked = useCallback((tileState: TileState, coord: Coord) => {
         const rightClickAction: BoardStateAction = {
             type: "tile-right-clicked",
-            tileState, coord: coord
+            tileState, coord
         };
 
         boardStateDispatch(rightClickAction);
@@ -66,4 +66,3 @@ const boardReducer = (state: BoardState, action: BoardStateAction): BoardState =
         }
     }
 }
-

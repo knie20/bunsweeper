@@ -23,7 +23,7 @@ export default function Tile({tileState, coord: coord, onTileClicked, onTileRigh
             onTileRightClicked(tileState, coord);
     }
     
-    return <div className="flex w-8 h-8 font-extrabold border-solid border-2 border-gray-700 grow">
+    return <div className="flex w-8 h-8 font-extrabold border-solid border-4 border-gray-500 grow tile">
         <div 
             className={getButtonClassName(tileState)} 
             onClick={handleClick}

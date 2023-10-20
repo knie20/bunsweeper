@@ -126,13 +126,49 @@ export const markTile: (tile: TileState) => TileState
     });    
 
 export const propagateReveal = (board: BoardState, coord: Coord): BoardState => {
-    const coordsToReveal = computePropagateCoords(board, coord);
+    const coordsToReveal = computePropagateCoords(board, coord, []);
 
     const nextBoard = applyToTilesAtCoords(board, coordsToReveal, revealTile);
 
     return nextBoard;
 }
 
-const computePropagateCoords = (board: BoardState, startingCoord: Coord): Coord[] => {
-    throw new Error("Function not implemented.");
+const computePropagateCoords = (
+    board: BoardState, 
+    startingCoord: Coord,
+    coordsToReveal: Coord[]
+    ): Coord[] => {
+    let tiles = board.tiles;
+    const X = startingCoord[0];
+    const Y = startingCoord[1];
+    let nextNoneCoords: Coord[] = [];
+    const adjacentCoords: Coord[] = filterInvalidCoords([
+        [X - 1, Y],
+        [X + 1, Y],
+        [X, Y - 1],
+        [X, Y + 1],
+    ], board.xLength, board.yLength);
+
+    adjacentCoords.forEach((c: Coord): void => {
+        if(coordsToReveal.includes(c))
+            return;
+        
+        let tile = tiles[c[0]][c[1]];
+        if (tile.revealed)
+            return;
+
+        if (tile.value === TileValue.None){
+            nextNoneCoords.push(c);    
+        }
+        coordsToReveal.push(c);
+        
+    });
+    
+    if(nextNoneCoords.length > 0)
+        coordsToReveal.concat(
+            nextNoneCoords.flatMap(c => computePropagateCoords(board, c, coordsToReveal))
+        );
+    
+
+    return coordsToReveal;
 }
