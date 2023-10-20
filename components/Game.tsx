@@ -1,8 +1,10 @@
 import { BoardState, Coords, TileState, initialTileState, testBoardState } from "@/models/BoardState"
 import Board from "./Board";
 import GameHeader from "./GameHeader";
-import { TileValue } from "@/models/TileDisplay";
-import { useEffect, useState } from "react";
+import { TileMark, TileValue } from "@/models/TileDisplay";
+import { Dispatch, ReducerAction, useCallback, useEffect, useReducer, useState } from "react";
+import { BoardStateAction } from "@/models/Store";
+import { generateBoard } from "@/helpers/board.helpers";
 
 export default function Game({length, width, bombAmount}: {
     length: number,
@@ -11,20 +13,34 @@ export default function Game({length, width, bombAmount}: {
 }) {
     const [marksUsed, setMarksUsed] = useState(0);
     const [bombsRevealed, setBombsRevealed] = useState(0);
-    const [boardState, setBoardState] = useState(new BoardState([]));
-
+    const [boardState, boardStateDispatch] = useReducer(boardReducer, new BoardState([]));
+    
     useEffect(() => {
-        setBoardState(generateBoard(length, width, bombAmount));
+        const generateNewBoardAction: BoardStateAction = {
+            type: "new-board",
+            length, width, bombAmount
+        };
+        boardStateDispatch(generateNewBoardAction);
         return () => {}
     }, [length, width, bombAmount])
     
-    const handleTileClicked = (tileState: TileState, coords: Coords) => {
-        
-    }
+    const handleTileClicked = useCallback((tileState: TileState, coords: Coords) => {
+        const rightClickAction: BoardStateAction = {
+            type: "tile-left-clicked",
+            tileState, coords
+        };
 
-    const handleTileRightClicked = (tileState: TileState, coords: Coords) => {
-        
-    }
+        boardStateDispatch(rightClickAction);
+    }, []);
+
+    const handleTileRightClicked = useCallback((tileState: TileState, coords: Coords) => {
+        const rightClickAction: BoardStateAction = {
+            type: "tile-right-clicked",
+            tileState, coords
+        };
+
+        boardStateDispatch(rightClickAction);
+    }, []);
     
     return <>
         <GameHeader bombAmount={bombAmount} marksUsed={marksUsed} bombsRevealed={bombsRevealed}></GameHeader>
@@ -35,72 +51,44 @@ export default function Game({length, width, bombAmount}: {
     </>
 }
 
-const generateBoard = (length: number, width: number, bombAmount: number): BoardState => {
-    const tiles: TileState[][] = Array(length).fill(null)
-        .map(() => Array(width).fill(null)
-            .map(() => {return {...initialTileState}}));
+const boardReducer = (state: BoardState, action: BoardStateAction): BoardState => {
+    switch(action.type) {
+        case ('new-board'): {
+            return generateBoard(action.length, action.width, action.bombAmount);
+        }
+        case ('tile-left-clicked'): {
+            const nextTiles = state.tiles.map((tileRow, y) => {
+                if (y === action.coords[1]){
+                    return tileRow.map((tile, x) => {
+                        if(x === action.coords[0]){
+                            tile.revealed = true;
+                        }
+                        return tile;
+                    });
+                }
+                return tileRow;
+            });
+            
+            return new BoardState(nextTiles);
+        }
+        case ('tile-right-clicked'): {
+            const nextTiles = state.tiles.map((tileRow, y) => {
+                if (y === action.coords[1]){
+                    return tileRow.map((tile, x) => {
+                        if(x === action.coords[0]){
+                            tile.mark = 
+                                action.tileState.mark === TileMark.Question ?
+                                TileMark.Blank :
+                                action.tileState.mark + 1
+                        }
+                        return tile;
+                    });
+                }
+                return tileRow;
+            });
 
-    const bombCoordinates: Coords[] = generateBombCoordinates(length - 1, width - 1, bombAmount);
-
-    const boardState = new BoardState(tiles);
-
-    bombCoordinates.forEach((coords) => {
-        addBombToTiles(boardState, coords);
-    });
-
-    return boardState;
-}
-
-const generateBombCoordinates = (maxX: number, maxY: number, bombAmount: number): Coords[] => {
-    let bombCoords: Coords[] = [];
-    
-    while (bombCoords.length < bombAmount){
-        let newBombCoords: Coords = [Math.floor(Math.random() * maxX), Math.floor(Math.random() * maxY)];
-        
-        let isCoordsExisting = bombCoords.find(coords => JSON.stringify(newBombCoords) === JSON.stringify(coords));
-        if(!isCoordsExisting)
-            bombCoords.push(newBombCoords);
+            return new BoardState(nextTiles);
+        }
     }
-
-    return bombCoords;
-}
-
-const addBombToTiles = (board: BoardState, coords: Coords): BoardState => {
-    let bombTile = board.tiles[coords[0]][coords[1]];
-    bombTile.value = TileValue.Bomb;
-
-    updateSurroundingTiles(board, coords);
-
-    return board;
-}
-
-const filterInvalidCoords = (coords: Coords[], maxX: number, maxY: number): Coords[] => {
-    return coords.filter(c => (
-            c[0] > -1 &&
-            c[0] < maxX &&
-            c[1] > -1 &&
-            c[1] < maxY
-        ));
-}
-
-const updateSurroundingTiles = (board: BoardState, bombCoords: Coords): void => {
-    let surroundingCoords: Coords[] = [
-        [bombCoords[0] - 1, bombCoords[1] - 1],
-        [bombCoords[0] - 1, bombCoords[1]],
-        [bombCoords[0] - 1, bombCoords[1] + 1],
-        [bombCoords[0], bombCoords[1] - 1],
-        [bombCoords[0], bombCoords[1] + 1],
-        [bombCoords[0] + 1, bombCoords[1] - 1],
-        [bombCoords[0] + 1, bombCoords[1]],
-        [bombCoords[0] + 1, bombCoords[1] + 1]
-    ];
-
-    surroundingCoords = filterInvalidCoords(surroundingCoords, board.xLength, board.yLength);
-
-    surroundingCoords.forEach(coord => {
-        let tile = board.tiles[coord[0]][coord[1]]; 
-        if(tile.value != TileValue.Bomb)
-            tile.value += 1;
-    });
 }
 

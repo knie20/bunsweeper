@@ -11,6 +11,8 @@ export default function Tile({tileState, coords, onTileClicked, onTileRightClick
     const face = makeFace(tileState);
 
     const handleClick: React.MouseEventHandler<HTMLDivElement> = (evt) => {
+        if(tileState.revealed) return;
+
         if (evt.type === 'click'){
             onTileClicked(tileState, coords);
         } else if (evt.type === 'contextmenu'){
