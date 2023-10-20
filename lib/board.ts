@@ -92,15 +92,15 @@ export const applyToTileAtCoord = (
 
 export const applyToTilesAtCoords = (
     board: BoardState, 
-    coordList: Coord[], 
+    coords: Coord[], 
     action: (tile: TileState) => TileState
     ): BoardState => {
-    const applicableYList = coordList.map(c => c[1]).filter(onlyUnique).sort();
+    const applicableYList = coords.map(c => c[1]).filter(onlyUnique).sort();
 
     const nextTiles = board.tiles.map((tileRow, y) => {
         if (applicableYList.includes(y)){
             return tileRow.map((tile, x) => {
-                if(coordList.includes([x, y])){
+                if(coords.find(c => c[0] === x && c[1] === y)){
                     return action(tile);
                 }
                 return tile;
@@ -126,7 +126,7 @@ export const markTile: (tile: TileState) => TileState
     });    
 
 export const propagateReveal = (board: BoardState, coord: Coord): BoardState => {
-    const coordsToReveal = computePropagateCoords(board, coord, []);
+    const coordsToReveal = computePropagateCoords(board, coord, [coord]);
 
     const nextBoard = applyToTilesAtCoords(board, coordsToReveal, revealTile);
 
@@ -150,24 +150,22 @@ const computePropagateCoords = (
     ], board.xLength, board.yLength);
 
     adjacentCoords.forEach((c: Coord): void => {
-        if(coordsToReveal.includes(c))
+        if(coordsToReveal.find(ec => c[0] === ec[0] && c[1] === ec[1]))
             return;
         
-        let tile = tiles[c[0]][c[1]];
+        let tile = tiles[c[1]][c[0]];
         if (tile.revealed)
             return;
 
-        if (tile.value === TileValue.None){
-            nextNoneCoords.push(c);    
-        }
+        if (tile.value === TileValue.None)
+            nextNoneCoords.push(c);
+
         coordsToReveal.push(c);
-        
     });
     
-    if(nextNoneCoords.length > 0)
-        coordsToReveal.concat(
-            nextNoneCoords.flatMap(c => computePropagateCoords(board, c, coordsToReveal))
-        );
+    if(nextNoneCoords.length > 0) {
+        nextNoneCoords.forEach(c => coordsToReveal = computePropagateCoords(board, c, coordsToReveal))
+    }
     
 
     return coordsToReveal;
