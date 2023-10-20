@@ -21,10 +21,17 @@ export default function Game({length, width, bombAmount}: {
     const handleTileClicked = (tileState: TileState, coords: Coords) => {
         
     }
+
+    const handleTileRightClicked = (tileState: TileState, coords: Coords) => {
+        
+    }
     
     return <>
         <GameHeader bombAmount={bombAmount} marksUsed={marksUsed} bombsRevealed={bombsRevealed}></GameHeader>
-        <Board boardState={boardState} onTileClicked={handleTileClicked}></Board>
+        <Board 
+            boardState={boardState} 
+            onTileClicked={handleTileClicked} 
+            onTileRightClicked={handleTileRightClicked}/>
     </>
 }
 

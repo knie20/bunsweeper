@@ -1,16 +1,22 @@
 import { BoardState, Coords, TileState } from "@/models/BoardState";
 import Tile from "./Tile";
 
-export default function Board({boardState, onTileClicked}: {
-    boardState: BoardState
-    onTileClicked: (tileState: TileState, coords: Coords) => void
+export default function Board({boardState, onTileClicked, onTileRightClicked}: {
+    boardState: BoardState,
+    onTileClicked: (tileState: TileState, coords: Coords) => void,
+    onTileRightClicked: (tileState: TileState, coords: Coords) => void
 }) {
     let tiles: any[] = [];
     
     boardState.tiles.map((tileRow, y) => {
         tileRow.map((tile, x) => {
             tiles.push(
-                <Tile tileState={tile} coords={[x, y]} onTileClicked={onTileClicked} key={`(${x},${y})_${buildKey(tile)}`}></Tile>
+                <Tile 
+                tileState={tile} 
+                coords={[x, y]} 
+                onTileClicked={onTileClicked} 
+                onTileRightClicked={onTileRightClicked}
+                key={`(${x},${y})_${buildKey(tile)}`}/>
             )
         })
     })

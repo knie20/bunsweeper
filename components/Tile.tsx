@@ -1,15 +1,30 @@
 import { Coords, TileState } from "@/models/BoardState";
 import { TileMark, TileValue } from "@/models/TileDisplay";
+import React from "react";
 
-export default function Tile({tileState, coords, onTileClicked}: {
+export default function Tile({tileState, coords, onTileClicked, onTileRightClicked}: {
     tileState: TileState,
     coords: Coords,
-    onTileClicked: (tileState: TileState, coords: Coords) => void
+    onTileClicked: (tileState: TileState, coords: Coords) => void,
+    onTileRightClicked: (tileState: TileState, coords: Coords) => void
 }) {
     const face = makeFace(tileState);
+
+    const handleClick: React.MouseEventHandler<HTMLDivElement> = (evt) => {
+        if (evt.type === 'click'){
+            onTileClicked(tileState, coords);
+        } else if (evt.type === 'contextmenu'){
+            evt.preventDefault();
+            onTileRightClicked(tileState, coords);
+        }
+    }
     
     return <div className="flex w-8 h-8 font-extrabold border-solid border-2 border-gray-700 grow">
-        <div className={getButtonClassName(tileState)} onClick={() => onTileClicked(tileState, coords)}>
+        <div 
+            className={getButtonClassName(tileState)} 
+            onClick={handleClick}
+            onContextMenu={handleClick}
+            >
             {face}
         </div>
     </div>
