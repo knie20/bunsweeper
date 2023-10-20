@@ -69,7 +69,7 @@ const boardReducer = (state: BoardState, action: BoardStateAction): BoardState =
         }
         case ('tile-left-clicked'): {
             if (action.tileState.value === TileValue.Bomb){
-                return new BoardState(applyRevealAllBombs(state), state.marks, state.status);
+                return new BoardState(applyRevealAllBombs(state), state.marks, "lost");
             }
             if (action.tileState.value === TileValue.None)
                 return new BoardState(propagateReveal(state, action.coord), state.marks, state.status);
