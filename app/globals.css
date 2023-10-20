@@ -15,11 +15,3 @@
     --background-end-rgb: 0, 0, 0;
   }
 }
-
-button.tile {
-  background-color: rgb(186, 186, 186);
-}
-
-button.tile-revealed {
-  background-color: rgb(100, 100, 100);
-}

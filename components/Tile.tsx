@@ -11,14 +11,16 @@ export default function Tile({tileState, coords, onTileClicked, onTileRightClick
     const face = makeFace(tileState);
 
     const handleClick: React.MouseEventHandler<HTMLDivElement> = (evt) => {
-        if(tileState.revealed) return;
-
-        if (evt.type === 'click'){
-            onTileClicked(tileState, coords);
-        } else if (evt.type === 'contextmenu'){
+        if (evt.type === 'contextmenu')
             evt.preventDefault();
+        
+        if(tileState.revealed) 
+            return;
+
+        if (evt.type === 'click')
+            onTileClicked(tileState, coords);
+        else if (evt.type === 'contextmenu')
             onTileRightClicked(tileState, coords);
-        }
     }
     
     return <div className="flex w-8 h-8 font-extrabold border-solid border-2 border-gray-700 grow">
@@ -34,10 +36,13 @@ export default function Tile({tileState, coords, onTileClicked, onTileRightClick
 
 const getButtonClassName = (tileState: TileState): string => {
     let base = 'flex grow items-stretch justify-center items-center cursor-pointer';
+
     if(!tileState.revealed)
-        base += ' tile';
+        base += ' bg-gray-100 hover:bg-gray-200 active:bg-blue-200';
+    else if(tileState.value === TileValue.Bomb)
+        base += ' bg-red-400'
     else 
-        base += ' tile-revealed';
+        base += ' bg-gray-400';
 
     let color = '';
 
@@ -68,7 +73,7 @@ const getButtonClassName = (tileState: TileState): string => {
                 color = 'text-cyan-700';
                 break;
             case TileValue.Bomb:
-                color = 'bg-red-600';
+                color = 'text-black';
                 break;
         }
     }
