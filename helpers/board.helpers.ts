@@ -1,47 +1,47 @@
-import { BoardState, Coords, TileState, initialTileState } from "@/models/BoardState";
-import { TileValue } from "@/models/TileDisplay";
+import { BoardState, Coord as Coord, TileState, initialTileState } from "@/models/BoardState";
+import { TileMark, TileValue } from "@/models/TileDisplay";
 
 export const generateBoard = (length: number, width: number, bombAmount: number): BoardState => {
     const tiles: TileState[][] = Array(length).fill(null)
         .map(() => Array(width).fill(null)
             .map(() => {return {...initialTileState}}));
 
-    const bombCoordinates: Coords[] = generateBombCoordinates(length - 1, width - 1, bombAmount);
+    const bombCoordinate: Coord[] = generateBombCoordinates(length - 1, width - 1, bombAmount);
 
     const boardState = new BoardState(tiles);
 
-    bombCoordinates.forEach((coords) => {
-        addBombToTiles(boardState, coords);
+    bombCoordinate.forEach((coord) => {
+        addBombToTiles(boardState, coord);
     });
 
     return boardState;
 }
 
-const generateBombCoordinates = (maxX: number, maxY: number, bombAmount: number): Coords[] => {
-    let bombCoords: Coords[] = [];
+const generateBombCoordinates = (maxX: number, maxY: number, bombAmount: number): Coord[] => {
+    let bombCoords: Coord[] = [];
     
     while (bombCoords.length < bombAmount){
-        let newBombCoords: Coords = [Math.floor(Math.random() * maxX), Math.floor(Math.random() * maxY)];
+        let newBombCoord: Coord = [Math.floor(Math.random() * maxX), Math.floor(Math.random() * maxY)];
         
-        let isCoordsExisting = bombCoords.find(coords => JSON.stringify(newBombCoords) === JSON.stringify(coords));
-        if(!isCoordsExisting)
-            bombCoords.push(newBombCoords);
+        let isCoordExisting = bombCoords.find(coord => JSON.stringify(newBombCoord) === JSON.stringify(coord));
+        if(!isCoordExisting)
+            bombCoords.push(newBombCoord);
     }
 
     return bombCoords;
 }
 
-const addBombToTiles = (board: BoardState, coords: Coords): BoardState => {
-    let bombTile = board.tiles[coords[0]][coords[1]];
+const addBombToTiles = (board: BoardState, coord: Coord): BoardState => {
+    let bombTile = board.tiles[coord[0]][coord[1]];
     bombTile.value = TileValue.Bomb;
 
-    updateSurroundingTiles(board, coords);
+    updateSurroundingTiles(board, coord);
 
     return board;
 }
 
-const filterInvalidCoords = (coords: Coords[], maxX: number, maxY: number): Coords[] => {
-    return coords.filter(c => (
+const filterInvalidCoords = (coord: Coord[], maxX: number, maxY: number): Coord[] => {
+    return coord.filter(c => (
             c[0] > -1 &&
             c[0] < maxX &&
             c[1] > -1 &&
@@ -49,16 +49,16 @@ const filterInvalidCoords = (coords: Coords[], maxX: number, maxY: number): Coor
         ));
 }
 
-const updateSurroundingTiles = (board: BoardState, bombCoords: Coords): void => {
-    let surroundingCoords: Coords[] = [
-        [bombCoords[0] - 1, bombCoords[1] - 1],
-        [bombCoords[0] - 1, bombCoords[1]],
-        [bombCoords[0] - 1, bombCoords[1] + 1],
-        [bombCoords[0], bombCoords[1] - 1],
-        [bombCoords[0], bombCoords[1] + 1],
-        [bombCoords[0] + 1, bombCoords[1] - 1],
-        [bombCoords[0] + 1, bombCoords[1]],
-        [bombCoords[0] + 1, bombCoords[1] + 1]
+const updateSurroundingTiles = (board: BoardState, bombCoord: Coord): void => {
+    let surroundingCoords: Coord[] = [
+        [bombCoord[0] - 1, bombCoord[1] - 1],
+        [bombCoord[0] - 1, bombCoord[1]],
+        [bombCoord[0] - 1, bombCoord[1] + 1],
+        [bombCoord[0], bombCoord[1] - 1],
+        [bombCoord[0], bombCoord[1] + 1],
+        [bombCoord[0] + 1, bombCoord[1] - 1],
+        [bombCoord[0] + 1, bombCoord[1]],
+        [bombCoord[0] + 1, bombCoord[1] + 1]
     ];
 
     surroundingCoords = filterInvalidCoords(surroundingCoords, board.xLength, board.yLength);
@@ -68,4 +68,71 @@ const updateSurroundingTiles = (board: BoardState, bombCoords: Coords): void => 
         if(tile.value != TileValue.Bomb)
             tile.value += 1;
     });
+}
+
+export const applyToTileAtCoordinate = (
+    board: BoardState, 
+    coord: Coord, 
+    action: (tile: TileState) => TileState
+    ): BoardState => {
+    const nextTiles = board.tiles.map((tileRow, y) => {
+        if (y === coord[1]){
+            return tileRow.map((tile, x) => {
+                if(x === coord[0]){
+                    return action(tile);
+                }
+                return tile;
+            });
+        }
+        return tileRow;
+    });
+    
+    return new BoardState(nextTiles);
+}
+
+export const applyToTilesAtCoordinates = (
+    board: BoardState, 
+    coordList: Coord[], 
+    action: (tile: TileState) => TileState
+    ): BoardState => {
+    const applicableYList = coordList.map(c => c[1]).filter(onlyUnique).sort();
+
+    const nextTiles = board.tiles.map((tileRow, y) => {
+        if (applicableYList.includes(y)){
+            return tileRow.map((tile, x) => {
+                if(coordList.includes([x, y])){
+                    return action(tile);
+                }
+                return tile;
+            });
+        }
+        return tileRow;
+    });
+    
+    return new BoardState(nextTiles);
+}
+
+const onlyUnique = (value: number, index: number, array: number[]): boolean => {
+    return array.indexOf(value) === index;
+}
+
+export const revealTile: (tile: TileState) => TileState 
+    = (tile) => ({...tile, revealed: true});
+export const markTile: (tile: TileState) => TileState 
+    = (tile) => ({...tile,
+        mark: tile.mark === TileMark.Question ?
+            TileMark.Blank :
+            tile.mark + 1
+    });    
+
+export const propagateReveal = (board: BoardState, coord: Coord): BoardState => {
+    const coordsToReveal = computePropagateCoords(board, coord);
+
+    const nextBoard = applyToTilesAtCoordinates(board, coordsToReveal, revealTile);
+
+    return nextBoard;
+}
+
+const computePropagateCoords = (board: BoardState, startingCoord: Coord): Coord[] => {
+    throw new Error("Function not implemented.");
 }

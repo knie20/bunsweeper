@@ -1,12 +1,12 @@
-import { Coords, TileState } from "@/models/BoardState";
+import { Coord, TileState } from "@/models/BoardState";
 import { TileMark, TileValue } from "@/models/TileDisplay";
 import React from "react";
 
-export default function Tile({tileState, coords, onTileClicked, onTileRightClicked}: {
+export default function Tile({tileState, coord: coord, onTileClicked, onTileRightClicked}: {
     tileState: TileState,
-    coords: Coords,
-    onTileClicked: (tileState: TileState, coords: Coords) => void,
-    onTileRightClicked: (tileState: TileState, coords: Coords) => void
+    coord: Coord,
+    onTileClicked: (tileState: TileState, coord: Coord) => void,
+    onTileRightClicked: (tileState: TileState, coord: Coord) => void
 }) {
     const face = makeFace(tileState);
 
@@ -18,9 +18,9 @@ export default function Tile({tileState, coords, onTileClicked, onTileRightClick
             return;
 
         if (evt.type === 'click')
-            onTileClicked(tileState, coords);
+            onTileClicked(tileState, coord);
         else if (evt.type === 'contextmenu')
-            onTileRightClicked(tileState, coords);
+            onTileRightClicked(tileState, coord);
     }
     
     return <div className="flex w-8 h-8 font-extrabold border-solid border-2 border-gray-700 grow">

@@ -1,10 +1,10 @@
-import { BoardState, Coords, TileState } from "@/models/BoardState"
+import { BoardState, Coord, TileState } from "@/models/BoardState"
 import Board from "./Board";
 import GameHeader from "./GameHeader";
-import { TileMark } from "@/models/TileDisplay";
+import { TileMark, TileValue } from "@/models/TileDisplay";
 import { useCallback, useEffect, useReducer, useState } from "react";
 import { BoardStateAction } from "@/models/Store";
-import { generateBoard } from "@/helpers/board.helpers";
+import { applyToTileAtCoordinate, generateBoard, markTile, propagateReveal, revealTile } from "@/helpers/board.helpers";
 
 export default function Game({length, width, bombAmount}: {
     length: number,
@@ -24,19 +24,19 @@ export default function Game({length, width, bombAmount}: {
         return () => {}
     }, [length, width, bombAmount])
     
-    const handleTileClicked = useCallback((tileState: TileState, coords: Coords) => {
+    const handleTileClicked = useCallback((tileState: TileState, coord: Coord) => {
         const rightClickAction: BoardStateAction = {
             type: "tile-left-clicked",
-            tileState, coords
+            tileState, coord: coord
         };
 
         boardStateDispatch(rightClickAction);
     }, []);
 
-    const handleTileRightClicked = useCallback((tileState: TileState, coords: Coords) => {
+    const handleTileRightClicked = useCallback((tileState: TileState, coord: Coord) => {
         const rightClickAction: BoardStateAction = {
             type: "tile-right-clicked",
-            tileState, coords
+            tileState, coord: coord
         };
 
         boardStateDispatch(rightClickAction);
@@ -57,37 +57,12 @@ const boardReducer = (state: BoardState, action: BoardStateAction): BoardState =
             return generateBoard(action.length, action.width, action.bombAmount);
         }
         case ('tile-left-clicked'): {
-            const nextTiles = state.tiles.map((tileRow, y) => {
-                if (y === action.coords[1]){
-                    return tileRow.map((tile, x) => {
-                        if(x === action.coords[0]){
-                            tile.revealed = true;
-                        }
-                        return tile;
-                    });
-                }
-                return tileRow;
-            });
-            
-            return new BoardState(nextTiles);
+            if (action.tileState.value === TileValue.None)
+                return propagateReveal(state, action.coord);
+            return applyToTileAtCoordinate(state, action.coord, revealTile);
         }
         case ('tile-right-clicked'): {
-            const nextTiles = state.tiles.map((tileRow, y) => {
-                if (y === action.coords[1]){
-                    return tileRow.map((tile, x) => {
-                        if(x === action.coords[0]){
-                            tile.mark = 
-                                action.tileState.mark === TileMark.Question ?
-                                TileMark.Blank :
-                                action.tileState.mark + 1
-                        }
-                        return tile;
-                    });
-                }
-                return tileRow;
-            });
-
-            return new BoardState(nextTiles);
+            return applyToTileAtCoordinate(state, action.coord, markTile);
         }
     }
 }

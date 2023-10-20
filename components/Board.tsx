@@ -1,10 +1,10 @@
-import { BoardState, Coords, TileState } from "@/models/BoardState";
+import { BoardState, Coord, TileState } from "@/models/BoardState";
 import Tile from "./Tile";
 
 export default function Board({boardState, onTileClicked, onTileRightClicked}: {
     boardState: BoardState,
-    onTileClicked: (tileState: TileState, coords: Coords) => void,
-    onTileRightClicked: (tileState: TileState, coords: Coords) => void
+    onTileClicked: (tileState: TileState, coord: Coord) => void,
+    onTileRightClicked: (tileState: TileState, coord: Coord) => void
 }) {
     let tiles: any[] = [];
     
@@ -13,7 +13,7 @@ export default function Board({boardState, onTileClicked, onTileRightClicked}: {
             tiles.push(
                 <Tile 
                 tileState={tile} 
-                coords={[x, y]} 
+                coord={[x, y]} 
                 onTileClicked={onTileClicked} 
                 onTileRightClicked={onTileRightClicked}
                 key={`(${x},${y})_${buildKey(tile)}`}/>
@@ -34,8 +34,4 @@ const generateBoardGrid = (rows: number, columns: number): any => {
     return {
         gridTemplate: `repeat(${rows}, 32px) / repeat(${columns}, 32px)`
     };
-}
-
-function onTileClicked(): void {
-    throw new Error("Function not implemented.");
 }

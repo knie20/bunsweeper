@@ -1,6 +1,6 @@
 import { TileMark, TileValue } from "./TileDisplay";
 
-export type Coords = [x: number, y: number]; 
+export type Coord = [x: number, y: number]; 
 
 export class BoardState {
     tiles: TileState[][] = [];
