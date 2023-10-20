@@ -4,7 +4,7 @@ import GameHeader from "./GameHeader";
 import { TileMark, TileValue } from "@/models/TileDisplay";
 import { useCallback, useEffect, useReducer, useState } from "react";
 import { BoardStateAction } from "@/models/Store";
-import { applyToTileAtCoordinate, generateBoard, markTile, propagateReveal, revealTile } from "@/helpers/board.helpers";
+import { applyToTileAtCoord, generateBoard, markTile, propagateReveal, revealTile } from "@/helpers/board.helpers";
 
 export default function Game({length, width, bombAmount}: {
     length: number,
@@ -59,10 +59,10 @@ const boardReducer = (state: BoardState, action: BoardStateAction): BoardState =
         case ('tile-left-clicked'): {
             if (action.tileState.value === TileValue.None)
                 return propagateReveal(state, action.coord);
-            return applyToTileAtCoordinate(state, action.coord, revealTile);
+            return applyToTileAtCoord(state, action.coord, revealTile);
         }
         case ('tile-right-clicked'): {
-            return applyToTileAtCoordinate(state, action.coord, markTile);
+            return applyToTileAtCoord(state, action.coord, markTile);
         }
     }
 }

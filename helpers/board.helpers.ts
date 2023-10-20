@@ -70,7 +70,7 @@ const updateSurroundingTiles = (board: BoardState, bombCoord: Coord): void => {
     });
 }
 
-export const applyToTileAtCoordinate = (
+export const applyToTileAtCoord = (
     board: BoardState, 
     coord: Coord, 
     action: (tile: TileState) => TileState
@@ -90,7 +90,7 @@ export const applyToTileAtCoordinate = (
     return new BoardState(nextTiles);
 }
 
-export const applyToTilesAtCoordinates = (
+export const applyToTilesAtCoords = (
     board: BoardState, 
     coordList: Coord[], 
     action: (tile: TileState) => TileState
@@ -128,7 +128,7 @@ export const markTile: (tile: TileState) => TileState
 export const propagateReveal = (board: BoardState, coord: Coord): BoardState => {
     const coordsToReveal = computePropagateCoords(board, coord);
 
-    const nextBoard = applyToTilesAtCoordinates(board, coordsToReveal, revealTile);
+    const nextBoard = applyToTilesAtCoords(board, coordsToReveal, revealTile);
 
     return nextBoard;
 }
