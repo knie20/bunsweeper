@@ -5,6 +5,9 @@ export type Coord = [x: number, y: number];
 export class BoardState {
     tiles: TileState[][] = [];
 
+    status: gameStatus = "inprogress";
+    marks: number;
+
     get yLength(): number {
         if(this.tiles.length > 0) return this.tiles[0].length;
         return 0;
@@ -16,6 +19,7 @@ export class BoardState {
 
     constructor(tiles: TileState[][]){
         this.tiles = tiles;
+        this.marks = 0;
     }
 
 }
@@ -35,10 +39,10 @@ export const initialTileState: TileState = {
 export const getAllTileStates: (() => TileState[][]) = () => {
     let revealedMarkCombinations : [boolean, TileMark][] = [
         [true, TileMark.Blank],
-        [true, TileMark.Marked],
+        [true, TileMark.Flagged],
         [true, TileMark.Question],
         [false, TileMark.Blank],
-        [false, TileMark.Marked],
+        [false, TileMark.Flagged],
         [false, TileMark.Question],
     ];
 
@@ -72,3 +76,5 @@ export const getAllTileStates: (() => TileState[][]) = () => {
 }
 
 export const testBoardState: BoardState = new BoardState(getAllTileStates());
+
+export type gameStatus = "inprogress" | "lost" | "won";

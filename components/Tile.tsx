@@ -17,7 +17,7 @@ export default function Tile({tileState, coord: coord, onTileClicked, onTileRigh
         if(tileState.revealed) 
             return;
 
-        if (evt.type === 'click')
+        if (evt.type === 'click' && tileState.mark == TileMark.Blank)
             onTileClicked(tileState, coord);
         else if (evt.type === 'contextmenu')
             onTileRightClicked(tileState, coord);
@@ -86,7 +86,7 @@ const makeFace = (tileState: TileState) => {
         switch (tileState.mark){
             case TileMark.Blank:
                 return '';
-            case TileMark.Marked:
+            case TileMark.Flagged:
                 return '¶';
             case TileMark.Question:
                 return '?';

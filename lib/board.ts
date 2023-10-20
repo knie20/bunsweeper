@@ -118,12 +118,12 @@ const onlyUnique = (value: number, index: number, array: number[]): boolean => {
 
 export const revealTile: (tile: TileState) => TileState 
     = (tile) => ({...tile, revealed: true});
-export const markTile: (tile: TileState) => TileState 
-    = (tile) => ({...tile,
-        mark: tile.mark === TileMark.Question ?
-            TileMark.Blank :
-            tile.mark + 1
-    });    
+export const markTileWithFlag: (tile: TileState) => TileState 
+    = (tile) => ({...tile, mark: TileMark.Flagged});
+export const markTileWithQuestion: (tile: TileState) => TileState 
+    = (tile) => ({...tile, mark: TileMark.Question});
+export const markTileWithBlank: (tile: TileState) => TileState 
+    = (tile) => ({...tile, mark: TileMark.Blank});    
 
 export const propagateReveal = (board: BoardState, coord: Coord): BoardState => {
     const coordsToReveal = computePropagateCoords(board, coord, [coord]);
@@ -138,10 +138,8 @@ const computePropagateCoords = (
     startingCoord: Coord,
     coordsToReveal: Coord[]
     ): Coord[] => {
-    let tiles = board.tiles;
     const X = startingCoord[0];
     const Y = startingCoord[1];
-    let nextNoneCoords: Coord[] = [];
     const adjacentCoords: Coord[] = filterInvalidCoords([
         [X - 1, Y],
         [X + 1, Y],
@@ -153,20 +151,28 @@ const computePropagateCoords = (
         if(coordsToReveal.find(ec => c[0] === ec[0] && c[1] === ec[1]))
             return;
         
-        let tile = tiles[c[1]][c[0]];
+        let tile = board.tiles[c[1]][c[0]];
         if (tile.revealed)
             return;
 
-        if (tile.value === TileValue.None)
-            nextNoneCoords.push(c);
-
         coordsToReveal.push(c);
+
+        if (tile.value === TileValue.None)
+            coordsToReveal = computePropagateCoords(board, c, coordsToReveal)
     });
     
-    if(nextNoneCoords.length > 0) {
-        nextNoneCoords.forEach(c => coordsToReveal = computePropagateCoords(board, c, coordsToReveal))
-    }
-    
-
     return coordsToReveal;
+}
+
+export const applyRevealAllBombs = (board: BoardState): BoardState => {
+    const nextTiles = board.tiles.map((tileRow, y) => {
+        return tileRow.map((tile, x) => {
+            if(tile.value === TileValue.Bomb){
+                tile.revealed = true;
+            }
+            return tile;
+        });
+    });
+    
+    return new BoardState(nextTiles);
 }

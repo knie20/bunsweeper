@@ -1,20 +1,19 @@
-import { BoardState, Coord, TileState } from "@/models/BoardState"
+import { BoardState, Coord, TileState, gameStatus } from "@/models/BoardState"
 import Board from "./Board";
 import GameHeader from "./GameHeader";
-import { useCallback, useEffect, useReducer, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { BoardStateAction } from "@/models/Store";
-import { applyToTileAtCoord, generateBoard, markTile, propagateReveal, revealTile } from "@/lib/board";
-import { TileValue } from "@/models/TileDisplay";
+import { applyToTileAtCoord, generateBoard, markTileWithBlank as clearTileMark, markTileWithFlag, markTileWithQuestion, propagateReveal, revealTile, applyRevealAllBombs } from "@/lib/board";
+import { TileMark, TileValue } from "@/models/TileDisplay";
 
 export default function Game({length, width, bombAmount}: {
     length: number,
     width: number,
     bombAmount: number
 }) {
-    const [marksUsed, setMarksUsed] = useState(0);
-    const [bombsRevealed, setBombsRevealed] = useState(0);
+    const [gameStatus, setGameStatus]: [gameStatus, any] = useState("inprogress");
     const [boardState, boardStateDispatch] = useReducer(boardReducer, new BoardState([]));
-    
+
     useEffect(() => {
         let generateNewBoardAction: BoardStateAction = {
             type: "new-board",
@@ -23,6 +22,18 @@ export default function Game({length, width, bombAmount}: {
         boardStateDispatch(generateNewBoardAction);
         return () => {}
     }, [length, width, bombAmount])
+
+    useEffect(() => {
+        setGameStatus(boardState.status);
+    }, [boardState.status])
+
+    useEffect(() => {
+        let markedBombs = boardState.tiles.flat()
+            .filter(t => t.value === TileValue.Bomb && t.mark === TileMark.Flagged)
+        
+        if(markedBombs.length === bombAmount)
+            setGameStatus("won");
+    }, [boardState.marks])
     
     const handleTileClicked = useCallback((tileState: TileState, coord: Coord) => {
         const rightClickAction: BoardStateAction = {
@@ -43,7 +54,7 @@ export default function Game({length, width, bombAmount}: {
     }, []);
     
     return <>
-        <GameHeader bombAmount={bombAmount} marksUsed={marksUsed} bombsRevealed={bombsRevealed}></GameHeader>
+        <GameHeader bombAmount={bombAmount} marksUsed={boardState.marks} gameStatus={gameStatus}></GameHeader>
         <Board 
             boardState={boardState} 
             onTileClicked={handleTileClicked} 
@@ -57,12 +68,32 @@ const boardReducer = (state: BoardState, action: BoardStateAction): BoardState =
             return generateBoard(action.length, action.width, action.bombAmount);
         }
         case ('tile-left-clicked'): {
+            if (action.tileState.value === TileValue.Bomb){
+                let nextBoard = applyRevealAllBombs(state);
+                nextBoard.status = "lost";
+
+                return nextBoard;
+            }
             if (action.tileState.value === TileValue.None)
                 return propagateReveal(state, action.coord);
             return applyToTileAtCoord(state, action.coord, revealTile);
         }
         case ('tile-right-clicked'): {
-            return applyToTileAtCoord(state, action.coord, markTile);
+            switch(state.tiles[action.coord[1]][action.coord[0]].mark){
+                case (TileMark.Blank): {
+                    let nextBoard = applyToTileAtCoord(state, action.coord, markTileWithFlag);
+                    nextBoard.marks += 1;
+                    return nextBoard;
+                } case (TileMark.Flagged): {
+                    let nextBoard = applyToTileAtCoord(state, action.coord, markTileWithQuestion);
+                    nextBoard.marks -= 1;
+                    return nextBoard;
+                } case (TileMark.Question): {
+                    return applyToTileAtCoord(state, action.coord, clearTileMark);
+                }
+            }
         }
     }
 }
+
+

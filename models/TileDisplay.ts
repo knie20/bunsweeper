@@ -13,6 +13,6 @@ export enum TileValue {
 
 export enum TileMark {
     Blank = 0,
-    Marked = 1,
+    Flagged = 1,
     Question = 2,
 }
