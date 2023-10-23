@@ -3,7 +3,7 @@ import Board from "./Board";
 import GameHeader from "./GameHeader";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { BoardStateAction } from "@/models/Store";
-import { applyToTileAtCoord, generateBoard, markTileWithBlank as clearTileMark, markTileWithFlag, markTileWithQuestion, propagateReveal, revealTile, applyRevealAllBombs } from "@/lib/board";
+import { applyToTileAtCoord, generateBoard, markTileWithBlank as clearTileMark, markTileWithFlag, markTileWithQuestion, propagateReveal, revealTile, applyRevealAllBombs, markTileWithBlank } from "@/lib/board";
 import { TileMark, TileValue } from "@/models/TileDisplay";
 
 export default function Game({length, width, bombAmount}: {
@@ -82,7 +82,7 @@ const boardReducer = (state: BoardState, action: BoardStateAction): BoardState =
                 } case (TileMark.Flagged): {
                     return new BoardState(applyToTileAtCoord(state, action.coord, markTileWithQuestion), state.marks -1, state.status);
                 } case (TileMark.Question): {
-                    return new BoardState(applyToTileAtCoord(state, action.coord, clearTileMark), state.marks, state.status);
+                    return new BoardState(applyToTileAtCoord(state, action.coord, markTileWithBlank), state.marks, state.status);
                 }
             }
         }
